@@ -1,0 +1,21 @@
+{
+    "model_mapping": {
+        "1": "qwen",
+        "2": "doubao",
+        "3": "gpt4o"
+    },
+    "models": {
+        "qwen": {
+            "api_func": "call_different_api.use_aili_qwen_api_single.qwen_main",
+            "column_name": "predict"
+        },
+        "doubao": {
+            "api_func": "call_different_api.use_doubao_api_single.doubao_main",
+            "column_name": "predict"
+        },
+        "gpt4o": {
+            "api_func": "call_different_api.use_gpt4o_api_single.main_gpt4o",
+            "column_name": "predict"
+        }
+    }
+}
