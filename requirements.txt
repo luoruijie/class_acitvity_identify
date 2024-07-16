@@ -1,0 +1,12 @@
+tensorly==0.8.1
+dashscope==1.20.2
+datasets==2.20.0
+openai==1.35.14
+pandas==2.2.2
+peft==0.11.1
+torch==2.3.0+cu121
+tqdm==4.66.4
+transformers==4.42.4
+trl==0.9.6
+vllm==0.5.2
+flash-attn==2.6.1
