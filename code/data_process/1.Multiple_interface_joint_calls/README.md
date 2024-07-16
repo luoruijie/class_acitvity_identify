@@ -46,7 +46,7 @@
 
 通过这种方式，`main.py` 可以灵活地根据配置文件调用不同的API，并处理输入的Excel数据，生成带有处理结果的输出文件。配置文件的使用使得新增或修改模型时，无需更改主程序代码，只需更新配置文件即可。
 
-`main.py` 的使用:python your_script.py --input_file input.xlsx --output_dir ./output --models 1 2 --config_file config/config.json
+`main.py` 的使用:python your_script.py --input_file input.xlsx --output_dir ./data/调api跑出的数据 --models 1 2 --config_file config/config.json
 
 
 
