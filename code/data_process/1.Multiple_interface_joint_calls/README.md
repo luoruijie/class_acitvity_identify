@@ -49,6 +49,34 @@
 `main.py` 的使用:python your_script.py --input_file input.xlsx --output_dir ./data/调api跑出的数据 --models 1 2 --config_file config/config.json
 
 
+## run.sh的用途和功能
+
+## 解释
+
+### 提示用户输入输入文件夹和输出文件夹：
+
+使用 `read -p` 提示用户输入 `input_dir`、`output_dir` 和 `config_file`。
+
+### 检查输入文件夹和输出文件夹是否存在：
+
+使用 `if` 语句检查用户输入的文件夹和配置文件路径是否存在，如果不存在，则输出错误信息并退出脚本。
+
+### 提示用户输入模型号：
+
+使用 `read -r -a models` 来读取用户输入的模型号，并将其存储在数组 `models` 中。
+
+### 确认用户输入的模型号：
+
+输出用户输入的模型号，以确认正确性。
+
+### 遍历输入文件夹中的所有Excel文件并处理：
+
+使用 `for` 循环遍历输入文件夹中的所有Excel文件（文件扩展名为 `.xlsx`）。
+对每个Excel文件，调用 `process_files.py` 脚本，并传递相应的参数。
+
+s
+
+
 
 ## 其中对gpt4-o的调用和处理写到user_gpt4o_api.py中。
 
