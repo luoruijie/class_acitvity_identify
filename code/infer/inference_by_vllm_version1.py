@@ -138,17 +138,7 @@ def main():
     device = "cuda"
     model_name_or_path = "/root/autodl-fs/qwen_7b_GaLore/checkpoint-120"
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=400)
-    instruction = """分析给定的老师话语，写出老师说完这段话后，学生要开展的课堂活动类别的分析过程，并从分析过程中提取相关的内容，构建一个JSON对象。
-    JSON对象结构：
-    {
-      "label": "string",
-      "status": "string",
-      "key_text": "string"
-    }
-    label：填写分析过程中识别的课堂活动类别，如果识别出多个课堂活动类别，用“、”连接多个活动类别，但不要重复填写。
-    status：填写分析过程中识别的课堂活动的进行状态（如“开始”、“进行中”或“结束”）。
-    key_text：填写在分析过程中识别的与所预测的课堂活动相关的子句。如果识别了多个课堂活动，则填写与第一个课堂活动相关的子句。
-    如果从分析过程中无法识别出任何预设的课堂活动类别，则所有字段都填写“NA”。
+    instruction1 = """分析给定的老师话语，写出老师说完这段话后，学生要开展的课堂活动类别的分析过程，
     """
 
     llm, tokenizer = load_model_and_tokenizer(model_name_or_path, device)
@@ -160,7 +150,7 @@ def main():
         return
 
     batch_size = 24
-    texts = ["###" + instruction + "\n" + "###老师话语：" + df.loc[i, 'text'] + "\n" + "###分析过程：" for i in
+    texts = ["###" + instruction1 + "\n" + "###老师话语：" + df.loc[i, 'text'] + "\n" + "###分析过程：" for i in
              range(len(df))]
     batches = [texts[i:i + batch_size] for i in range(0, len(texts), batch_size)]
 
