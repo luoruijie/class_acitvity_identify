@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+from tqdm import tqdm
 
 with open("config/prompt_file.txt", "r", encoding="utf-8") as f:
     prompt = f.read()
@@ -65,15 +66,15 @@ def extract_json(text):
 
 
 if __name__ == '__main__':
-    data = pd.read_excel("combined_file.xlsx")
+    data = pd.read_excel("combined.xlsx")
     data = data.dropna(axis=0, how='all')
-    data = data[~data['gpt4o_output'].str.contains("error")].reset_index(drop=True)
-    gpt4o_output = data['gpt4o_output'].to_list()
-    print("gpt4o_output: ", gpt4o_output)
+    data = data[~data['predict'].str.contains("error")].reset_index(drop=True)
+    gpt4o_output = data['predict'].to_list()
+
     df = pd.DataFrame()
     df['text'] = data['text']
     output_analysis = [f'{process_text(item)}' for item in gpt4o_output]
-    output_json = [f'{extract_json(item)}' for item in gpt4o_output]
+    output_json = [f'{extract_json(item)}' for item in tqdm(gpt4o_output)]
     df['gpt4o_output_analysis'] = output_analysis
     df['gpt4o_output_json'] = output_json
     df['gpt4o_label'] = [eval(item).get("label") for item in output_json]

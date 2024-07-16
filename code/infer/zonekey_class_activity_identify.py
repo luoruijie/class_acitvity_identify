@@ -149,12 +149,6 @@ if __name__ == '__main__':
     # 示例输入
     df = pd.read_excel("高希娜.xlsx")
     input_texts = df['text'].to_list()[0:2]
-    # input_texts = [
-    #     "老师说话内容1",
-    #     "老师说话内容2",
-    #     "老师说话内容3",
-    #     # 更多文本内容
-    # ]
     predictions = main(input_texts)
     # for idx, prediction in enumerate(predictions):
     #     print(f"预测结果 {idx + 1}：", prediction)
