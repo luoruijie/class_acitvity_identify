@@ -28,7 +28,7 @@ tokenizer.padding_side = 'left'
 
 # 加载数据集
 # ds = load_dataset("timdettmers/openassistant-guanaco")
-ds = load_dataset('soikit/cai_dataset_2_text_coloumn')
+ds = load_dataset('soikit/cai_dataset_3_text_coloumn')
 
 # 加载模型，使用 bfloat16 数据类型，并配置设备和注意力实现方式
 model = AutoModelForCausalLM.from_pretrained(
