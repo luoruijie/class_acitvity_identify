@@ -136,7 +136,7 @@ def main():
         无
     """
     device = "cuda"
-    model_name_or_path = "/root/autodl-fs/qwen_7b_GaLore/checkpoint-120"
+    model_name_or_path = "/root/autodl-fs/qwen_7b_GaLore/checkpoint-180"
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=400)
     instruction1 = """分析给定的老师话语，写出老师说完这段话后，学生要开展的课堂活动类别的分析过程，
     """
