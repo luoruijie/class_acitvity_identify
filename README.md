@@ -3,6 +3,6 @@
 ## 包括数据预处理，模型训练，推理。
 
 ## 安装环境：
-PyTorch  2.3.0
-Python  3.12(ubuntu22.04)
-Cuda  12.1
+    PyTorch  2.3.0
+    Python  3.10(ubuntu22.04)
+    Cuda  12.1
