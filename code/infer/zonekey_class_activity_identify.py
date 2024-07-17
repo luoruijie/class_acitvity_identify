@@ -2,7 +2,8 @@ import time
 import torch
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
-import pandas as pd 
+import pandas as pd
+
 
 def load_model_and_tokenizer(model_path, device):
     """
@@ -27,6 +28,7 @@ def load_model_and_tokenizer(model_path, device):
     except Exception as e:
         print(f"Error loading model or tokenizer: {e}")
         return None, None
+
 
 def process_batch(batch_texts, llm, sampling_params):
     """
@@ -61,6 +63,7 @@ def process_batch(batch_texts, llm, sampling_params):
 
     return outputs
 
+
 def extract_content(text):
     """
     提取文本中的JSON对象。
@@ -77,6 +80,7 @@ def extract_content(text):
     index = text.find('}')
     return text[:index + 1] if index != -1 else text
 
+
 def main(input_texts):
     """
     主函数。
@@ -91,7 +95,7 @@ def main(input_texts):
         list of str: 处理后的预测结果列表
     """
     device = "cuda"
-    model_name_or_path = "/root/autodl-fs/qwen_7b_GaLore/checkpoint-240"
+    model_name_or_path = "/root/autodl-fs/qwen_7b_GaLore/checkpoint-180"
     sampling_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=400)
     instruction1 = """分析给定的老师话语，写出老师说完这段话后，学生要开展的课堂活动类别的分析过程。
     """
@@ -108,7 +112,7 @@ def main(input_texts):
     for batch in batches:
         batch_predictions = process_batch(batch, llm, sampling_params)
         all_predictions.extend([item.outputs[0].text for item in batch_predictions])
-    print("all_predictions",all_predictions)
+    print("all_predictions", all_predictions)
     # all_predictions_processed = [extract_content(item) for item in all_predictions]
 
     ## 第二步,用instructions2来从中提取出json格式。
@@ -137,19 +141,23 @@ key_text：填写label中第一个课堂活动类别对应的课堂活动指令�
     all_predictions_2 = []
     for batch in batches_instruction2:
         batch_predictions = process_batch(batch, llm, sampling_params)
-        print("batch_predictions",batch_predictions)
+        print("batch_predictions", batch_predictions)
         all_predictions_2.extend([item.outputs[0].text for item in batch_predictions])
 
-    all_predictions_processed_2= [extract_content(item) for item in all_predictions_2]
-    
-    print("all_predictions",all_predictions_processed_2)
-    return all_predictions_processed_2
+    all_predictions_processed_2 = [extract_content(item) for item in all_predictions_2]
+
+    print("all_predictions", all_predictions_processed_2)
+    return all_predictions, all_predictions_processed_2
+
 
 if __name__ == '__main__':
     # 示例输入
     df = pd.read_excel("高希娜.xlsx")
-    input_texts = df['text'].to_list()[0:2]
-    predictions = main(input_texts)
+    input_texts = df['text'].to_list()
+    analysis_predictions, label_predictions = main(input_texts)
+    df['Analysis_process'] = analysis_predictions
+    df['class_activity_label'] = label_predictions
+    df.to_excel("高希娜_vllm_batch.xlsx")
     # for idx, prediction in enumerate(predictions):
     #     print(f"预测结果 {idx + 1}：", prediction)
 
