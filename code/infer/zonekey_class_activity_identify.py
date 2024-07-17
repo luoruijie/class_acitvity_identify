@@ -112,26 +112,28 @@ def main(input_texts):
     for batch in batches:
         batch_predictions = process_batch(batch, llm, sampling_params)
         all_predictions.extend([item.outputs[0].text for item in batch_predictions])
-    print("all_predictions", all_predictions)
+
+    all_predictions = [item.split('<|endoftext|>')[0] if '<|endoftext|>' in item else item for item in all_predictions]
+    print("all_predictions_1", all_predictions)
     # all_predictions_processed = [extract_content(item) for item in all_predictions]
 
     ## 第二步,用instructions2来从中提取出json格式。
     instruction2 = """从给定的文本中提取相关的内容，构建一个JSON对象。
 
-JSON对象结构：
+    JSON对象结构：
 
-{
-  "label": "string",
-  "status": "string",
-  "key_text": "string"
-}
-label：填写分析过程中识别的课堂活动类别，如果识别出多个课堂活动类别，用“、”连接多个活动类别，但不要重复填写。
-status：填写分析过程中识别的课堂活动的进行状态（如“开始”、“进行中”或“结束”）。
-key_text：填写label中第一个课堂活动类别对应的课堂活动指令语句。
+    {
+      "label": "string",
+      "status": "string",
+      "key_text": "string"
+    }
+    label：填写分析过程中识别的课堂活动类别，如果识别出多个课堂活动类别，用“、”连接多个活动类别，但不要重复填写。
+    status：填写分析过程中识别的课堂活动的进行状态（如“开始”、“进行中”或“结束”）。
+    key_text：填写label中第一个课堂活动类别对应的课堂活动指令语句。
 
-如果从分析过程中无法识别出任何预设的课堂活动类别，则所有字段都填写“NA”。
+    如果从分析过程中无法识别出任何预设的课堂活动类别，则所有字段都填写“NA”。
 
-给定的文本如下：
+    给定的文本如下：
 
     """
     texts2 = [instruction2 + item for item in all_predictions]
@@ -141,19 +143,18 @@ key_text：填写label中第一个课堂活动类别对应的课堂活动指令�
     all_predictions_2 = []
     for batch in batches_instruction2:
         batch_predictions = process_batch(batch, llm, sampling_params)
-        print("batch_predictions", batch_predictions)
         all_predictions_2.extend([item.outputs[0].text for item in batch_predictions])
 
     all_predictions_processed_2 = [extract_content(item) for item in all_predictions_2]
 
-    print("all_predictions", all_predictions_processed_2)
+    print("all_predictions_2", all_predictions_processed_2)
     return all_predictions, all_predictions_processed_2
 
 
 if __name__ == '__main__':
     # 示例输入
     df = pd.read_excel("高希娜.xlsx")
-    input_texts = df['text'].to_list()
+    input_texts = df['text'].to_list()[0:2]
     analysis_predictions, label_predictions = main(input_texts)
     df['Analysis_process'] = analysis_predictions
     df['class_activity_label'] = label_predictions
