@@ -54,18 +54,19 @@ training_arguments = TrainingArguments(
     optim="galore_adamw",  # 优化器选择 GaLore AdamW
     optim_args="rank=512, update_proj_gap=200, scale=1.8",  # 优化器参数配置
     optim_target_modules=[r".*attn.*", r".*mlp.*"],  # 优化器目标模块
-    save_strategy = 'steps',  # 保存策略为每隔一定步数保存一次模型
+    save_strategy = 'epoch',  # 保存策略为每次一个epoch保存一次模型
     save_steps=60,  # 每 60 步保存一次模型
     save_total_limit=1,  # 只保留一个最佳模型
-    logging_steps=85,  # 每 85 步记录一次日志
+    logging_steps=50,  # 每 85 步记录一次日志
     learning_rate=1e-5,  # 学习率
-    eval_steps=10,  # 每 10 步进行一次评估
+    eval_steps=50,  # 每 10 步进行一次评估
     bf16=torch.cuda.is_bf16_supported(),  # 是否支持 bfloat16
     num_train_epochs=10,  # 训练的总 epoch 数
-    warmup_ratio=0.1,  # 预热比例
+    warmup_ratio=0.2,  # 预热比例
     lr_scheduler_type="linear",  # 学习率调度器类型为线性
     load_best_model_at_end=True,  # 训练结束时加载最佳模型
     metric_for_best_model="loss",  # 使用 loss 作为选择最佳模型的指标
+    weight_decay=0.05,
 )
 
 # 创建训练器 SFTTrainer
