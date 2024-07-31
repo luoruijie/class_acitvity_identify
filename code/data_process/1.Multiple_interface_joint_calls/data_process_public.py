@@ -67,15 +67,24 @@ def extract_json(text):
 
 if __name__ == '__main__':
     data = pd.read_excel("combined.xlsx")
+
     data = data.dropna(axis=0, how='all')
     data = data[~data['predict'].str.contains("error")].reset_index(drop=True)
     gpt4o_output = data['predict'].to_list()
 
     df = pd.DataFrame()
+    df['file_name'] = data['file_name']
     df['text'] = data['text']
     output_analysis = [f'{process_text(item)}' for item in gpt4o_output]
     output_json = [f'{extract_json(item)}' for item in tqdm(gpt4o_output)]
     df['gpt4o_output_analysis'] = output_analysis
     df['gpt4o_output_json'] = output_json
-    df['gpt4o_label'] = [eval(item).get("label") for item in output_json]
-    df.to_excel("combined_file_splited.xlsx", index=False)
+    list1 =[]
+    for i,item in tqdm(enumerate(output_json)):
+        try:
+            list1.append(eval(item).get("label"))
+        except Exception as e:
+            print(i)
+
+    df['gpt4o_label'] = [eval(item).get("label") for item in tqdm(output_json)]
+    df.to_excel("combined_file_splited_new.xlsx", index=False)

@@ -46,7 +46,8 @@
 
 通过这种方式，`main.py` 可以灵活地根据配置文件调用不同的API，并处理输入的Excel数据，生成带有处理结果的输出文件。配置文件的使用使得新增或修改模型时，无需更改主程序代码，只需更新配置文件即可。
 
-`main.py` 的使用:python your_script.py --input_file input.xlsx --output_dir ./data/调api跑出的数据 --models 1 2 --config_file config/config.json
+`main.py` 的使用:python main.py --input_file ./data/2切割后的数据/静夜思_processed.xlsx --output_dir ./data/3调api跑出的数据 --models 3 --config_file config/config.json
+
 
 
 ## run.sh的用途和功能
@@ -84,3 +85,4 @@ s
 
 ## 其中对doubao的调用和处理写到user_doubao_api.py中。
 
+python main.py --input_file C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data\2切割后的数据\孙权劝学_processed.xlsx --output_dir C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data\3调api跑出的数据\调api跑出的数据_second --models 3 --config_file config/config.json
