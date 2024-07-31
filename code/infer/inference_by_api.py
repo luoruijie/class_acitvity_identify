@@ -1,7 +1,12 @@
-import argparse
+import json
+from flask import Flask, request, jsonify
 import pandas as pd
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+
+app = Flask(__name__)
+
+model_path = ""  # 这是要写死的
 
 
 def load_model_and_tokenizer(model_path):
@@ -28,8 +33,7 @@ def infer_batch(texts, model, tokenizer, device, batch_size=8, max_new_tokens=40
     return results
 
 
-def process_file(input_file, model, tokenizer, device, infer_method):
-    df = pd.read_excel(input_file)
+def process_texts(texts, model, tokenizer, device, infer_method):
     instruction1 = """###分析给定的老师话语，写出老师说完这段话后，学生要开展的课堂活动类别的分析过程\n###老师话语："""
     instruction2 = """请从以下文本中提取信息，并构建一个JSON对象。JSON对象结构如下
     {
@@ -47,37 +51,56 @@ def process_file(input_file, model, tokenizer, device, infer_method):
 
     if infer_method == 'single':
         analysis_process = []
-        for text in df['text']:
-            analysis_process.append(infer_single(instruction1 + text + "\n###分析过程：", model, tokenizer, device))
+        for text in texts:
+            try:
+                analysis_process.append(infer_single(instruction1 + text + "\n###分析过程：", model, tokenizer, device))
+            except Exception as e:
+                analysis_process.append("ERROR: " + str(e))
 
-        class_label = []
+        class_activity_label = []
         for analysis in analysis_process:
-            class_label.append(infer_single(instruction2 + analysis, model, tokenizer, device))
+            try:
+                class_activity_label.append(infer_single(instruction2 + analysis, model, tokenizer, device))
+            except Exception as e:
+                class_activity_label.append("ERROR: " + str(e))
     else:
-        texts = [instruction1 + item + "\n###分析过程：" for item in df['text'].tolist()]
-        analysis_process = infer_batch(texts, model, tokenizer, device)
+        texts = [instruction1 + item + "\n###分析过程：" for item in texts]
+        try:
+            analysis_process = infer_batch(texts, model, tokenizer, device)
+        except Exception as e:
+            analysis_process = ["ERROR: " + str(e)] * len(texts)
 
         text2 = [instruction2 + item for item in analysis_process]
-        class_label = infer_batch(text2, model, tokenizer, device)
+        try:
+            class_activity_label = infer_batch(text2, model, tokenizer, device)
+        except Exception as e:
+            class_activity_label = ["ERROR: " + str(e)] * len(text2)
 
-    df['analysis_process'] = analysis_process
-    df['class_label'] = class_label
-
-    return df
+    return analysis_process, class_activity_label
 
 
-def main(args):
-    model, tokenizer, device = load_model_and_tokenizer(args.model_path)
-    df = process_file(args.input_file, model, tokenizer, device, args.infer_method)
-    df.to_excel(args.output_file, index=False)
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    data = request.get_json()
+
+    if 'text' not in data or not isinstance(data['text'], list):
+        return jsonify({"error": "Invalid input, 'text' key must be present and must be a list of strings."}), 400
+
+    texts = data['text']
+
+    infer_method = data.get('infer_method', 'batch')
+
+    try:
+        model, tokenizer, device = load_model_and_tokenizer(model_path)
+        analysis_process, class_activity_label = process_texts(texts, model, tokenizer, device, infer_method)
+    except Exception as e:
+        return jsonify({"error": "Model loading or processing error: " + str(e)}), 500
+
+    return jsonify({
+        "analysis_process": analysis_process,
+        "class_activity_label": class_activity_label
+    })
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process some text using a transformer model.")
-    parser.add_argument("--input_file", type=str, required=True, help="Path to the input Excel file.")
-    parser.add_argument("--model_path", type=str, required=True, help="Path to the transformer model.")
-    parser.add_argument("--output_file", type=str, required=True, help="Path to the output Excel file.")
-    parser.add_argument("--infer_method", type=str, choices=['single', 'batch'], required=True,
-                        help="Inference method: 'single' for single inference, 'batch' for batch inference.")
-    args = parser.parse_args()
-    main(args)
+    app.run(host='0.0.0.0', port=5000)

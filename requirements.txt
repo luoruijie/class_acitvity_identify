@@ -8,5 +8,5 @@ torch==2.3.0+cu121
 tqdm==4.66.4
 transformers==4.42.4
 trl==0.9.6
-vllm==0.5.2
+vllm==0.5.1
 flash-attn==2.6.1
