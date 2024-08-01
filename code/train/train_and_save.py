@@ -34,7 +34,7 @@ ds = load_dataset('yimeng521/sunny_datasets')
 
 # 加载模型，使用 bfloat16 数据类型，并配置设备和注意力实现方式
 model = AutoModelForCausalLM.from_pretrained(
-    args.model_name, torch_dtype=torch.bfloat16, device_map={"": 0}, attn_implementation=attn_implementation
+    args.model_name, torch_dtype=torch.bfloat16, device_map="auto", attn_implementation=attn_implementation
 )
 model.gradient_checkpointing_enable()
 model.config.pad_token_id = tokenizer.pad_token_id
@@ -44,13 +44,13 @@ model.config.use_cache = False
 training_arguments = TrainingArguments(
     output_dir=args.output_dir,
     evaluation_strategy="epoch",
-    save_strategy="epoch",
+    save_strategy="no",  # 禁用保存检查点
     do_eval=True,
     per_device_train_batch_size=1,
     per_device_eval_batch_size=1,
     log_level="debug",
     optim="galore_adamw",
-    optim_args="rank=512, update_proj_gap=200, scale=1.8",
+    optim_args="rank=1024, update_proj_gap=500, scale=1.8",
     optim_target_modules=[r".*attn.*", r".*mlp.*"],
     logging_steps=85,
     learning_rate=1e-5,
@@ -58,7 +58,7 @@ training_arguments = TrainingArguments(
     num_train_epochs=10,
     warmup_ratio=0.1,
     lr_scheduler_type="linear",
-    load_best_model_at_end=True,
+    load_best_model_at_end=False,  # 禁用自动加载最佳模型
     metric_for_best_model="eval_loss",
     greater_is_better=False,
     save_total_limit=1
@@ -78,10 +78,11 @@ trainer = SFTTrainer(
 # 开始训练
 trainer.train()
 
+# 在训练结束后手动保存最佳模型
+best_model = trainer.model
+best_model.save_pretrained(args.output_dir)
+tokenizer.save_pretrained(args.output_dir)
 
-#python full_parameter_ft_use_galore.py --model_name "/path/to/your/model" --output_dir "/path/to/your/output_directory"
 
-#eg: python full_parameter_ft_use_galore.py --model_name /root/autodl-fs/llama3.1/llama3___1-8b-instruct-dpo-zh --output_dir /root/autodl-fs/llama3
 
-#eg: python full_parameter_ft_use_galore.py --model_name /root/autodl-fs/llama3.1/llama3___1-8b-instruct-dpo-zh --output_dir /root/autodl-fs/qwen_7b_GaLore
-
+#eg: python train_and_save.py --model_name /root/autodl-fs/qwen/Qwen1___5-32B-Chat --output_dir /root/autodl-fs/qwen_32b_GaLore
