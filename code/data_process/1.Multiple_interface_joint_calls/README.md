@@ -85,4 +85,4 @@ s
 
 ## 其中对doubao的调用和处理写到user_doubao_api.py中。
 
-python main.py --input_file C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data\2切割后的数据\孙权劝学_processed.xlsx --output_dir C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data\3调api跑出的数据\调api跑出的数据_second --models 3 --config_file config/config.json
+python main.py --input_file C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data\gaoxin_processed.xlsx --output_dir C:\Users\zonekey008\Desktop\class_acitvity_identify\code\data_process\1.Multiple_interface_joint_calls\data --models 3 --config_file config/config.json

@@ -66,7 +66,7 @@ def extract_json(text):
 
 
 if __name__ == '__main__':
-    data = pd.read_excel("combined.xlsx")
+    data = pd.read_excel("data/gpt4o_gaoxin_processed_output.xlsx")
 
     data = data.dropna(axis=0, how='all')
     data = data[~data['predict'].str.contains("error")].reset_index(drop=True)
@@ -87,4 +87,4 @@ if __name__ == '__main__':
             print(i)
 
     df['gpt4o_label'] = [eval(item).get("label") for item in tqdm(output_json)]
-    df.to_excel("combined_file_splited_new.xlsx", index=False)
+    df.to_excel("combined_file_splited_new_gaoxin.xlsx", index=False)

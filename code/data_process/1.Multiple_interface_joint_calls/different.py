@@ -160,5 +160,5 @@ df_combined = df_combined[df_combined['gpt4o_label']!="error"].reset_index(drop=
 df_combined['gpt4o_label']= df_combined['gpt4o_label'].replace(0,"其他")
 df_combined = df_combined.drop(['gpt4o_label_second'],axis=1)
 # 保存合并后的文件
-output_file = 'combined_file_splited.xlsx'
+output_file = f'combined_file_splited_{len(df_combined)}.xlsx'
 df_combined.to_excel(output_file, index=False)
