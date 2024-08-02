@@ -33,7 +33,16 @@ folder4 = 'C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_pr
 # 获取文件夹中的文件列表
 files_folder1 = set([item.split("_processed")[0] for item in os.listdir(folder1)])
 files_folder_new = set(["_".join(item.split("_processed_output.xlsx")[0].split("_")[1:]) for item in os.listdir(folder2)])
-files_old = set(["_".join(item.split("_processed_output.xlsx")[0].split("_")[1:]) for item in os.listdir(folder4)])
+list_files = []
+for item in os.listdir(folder4):
+    if "first" in item:
+        list_files.append("_".join(item.split("_processed_output_first.xlsx")[0].split("_")[1:]))
+    elif "second" in item:
+        list_files.append("_".join(item.split("_processed_output_second.xlsx")[0].split("_")[1:]))
+    else:
+        list_files.append("_".join(item.split("_processed_output.xlsx")[0].split("_")[1:]))
+
+files_old = set(list_files)
 files_folder2 = files_folder_new.union(files_old)
 # 找出只在文件夹1中的文件
 different = list(files_folder1 - files_folder2)
