@@ -18,7 +18,7 @@ if not os.path.exists(output_dir) or not os.path.exists(data_dir):
 data_dir_list = os.listdir(data_dir)
 print(data_dir_list)
 for input_file in data_dir_list:
-    print("input_file", input_file)
+    # print("input_file", input_file)
     if input_file.endswith(".xlsx"):
         input_file_path = os.path.join(data_dir, input_file)
         print(input_file_path)

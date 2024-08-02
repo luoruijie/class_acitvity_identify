@@ -1,15 +1,13 @@
-import logging
-
 import pandas as pd
-from data_process_public import prompt
 from openai import AzureOpenAI
+from data_process_public import prompt
+import logging
 
 # 配置日志记录
 logging.basicConfig(filename='gpt4o_process.log', level=logging.INFO, encoding="utf-8", filemode='w',
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
 
-# 注意：这个部署在azure上的api接口会在2025年三月份的时候过期
 def main_gpt4o(df):
     client = AzureOpenAI(
         azure_endpoint="https://zonekey-gpt4o.openai.azure.com/",
