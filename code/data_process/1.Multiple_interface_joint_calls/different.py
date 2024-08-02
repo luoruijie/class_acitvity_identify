@@ -147,27 +147,33 @@ unmatch_index = combined_first[combined_first['gpt4o_label']!=combined_first['gp
 # 保留gpt4o_label一致的数据
 
 matched_data = combined_first[~combined_first.index.isin(unmatch_index)].reset_index(drop=True)
+#将gpt4o_label列中值 为”error"的行去掉
+matched_data = matched_data[matched_data['gpt4o_label']!="error"].reset_index(drop=True)
+#将"gpt4o_label"列中值为0替换为"其他"
+matched_data['gpt4o_label']= matched_data['gpt4o_label'].replace(0,"其他")
+matched_data = matched_data.drop(['gpt4o_label_second'],axis=1)
 # 将结果存储为Excel文件
-output_path = "combined_file_splited_new.xlsx"
+output_path = f"combined_file_splited_new_{len(matched_data)}.xlsx"
 matched_data.to_excel(output_path, index=False)
+#
 
 # 6.生成最终的训练数据
 # 读取两个xlsx文件
-file1 = 'combined_file_splited_old.xlsx'
-file2 = 'combined_file_splited_new.xlsx'
-
-# 使用pandas读取xlsx文件
-df1 = pd.read_excel(file1)
-df2 = pd.read_excel(file2)
-
-# 合并两个DataFrame
-
-df_combined = pd.concat([df1, df2])
-#将gpt4o_label列中值 为”error"的行去掉
-df_combined = df_combined[df_combined['gpt4o_label']!="error"].reset_index(drop=True)
-#将"gpt4o_label"列中值为0替换为"其他"
-df_combined['gpt4o_label']= df_combined['gpt4o_label'].replace(0,"其他")
-df_combined = df_combined.drop(['gpt4o_label_second'],axis=1)
-# 保存合并后的文件
-output_file = f'combined_file_splited_{len(df_combined)}.xlsx'
-df_combined.to_excel(output_file, index=False)
+# file1 = 'combined_file_splited_old.xlsx'
+# file2 = 'combined_file_splited_new.xlsx'
+#
+# # 使用pandas读取xlsx文件
+# df1 = pd.read_excel(file1)
+# df2 = pd.read_excel(file2)
+#
+# # 合并两个DataFrame
+#
+# df_combined = pd.concat([df1, df2])
+# #将gpt4o_label列中值 为”error"的行去掉
+# df_combined = df_combined[df_combined['gpt4o_label']!="error"].reset_index(drop=True)
+# #将"gpt4o_label"列中值为0替换为"其他"
+# df_combined['gpt4o_label']= df_combined['gpt4o_label'].replace(0,"其他")
+# df_combined = df_combined.drop(['gpt4o_label_second'],axis=1)
+# # 保存合并后的文件
+# output_file = f'combined_file_splited_{len(df_combined)}.xlsx'
+# df_combined.to_excel(output_file, index=False)
