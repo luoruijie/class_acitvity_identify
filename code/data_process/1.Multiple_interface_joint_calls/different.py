@@ -1,6 +1,7 @@
 # 导入需要的包
 import os
 
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -9,8 +10,8 @@ from data_proces_splits import main
 from data_process_public import process_text, extract_json
 
 # 1-2：切割原始文件
-data_dir = "C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\1原始数据"
-output_dir = "C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\2切割后的数据"
+data_dir = "data\\1原始数据"
+output_dir = "data\\2切割后的数据"
 if not os.path.exists(output_dir) or not os.path.exists(data_dir):
     os.makedirs(output_dir)
     os.makedirs(data_dir)
@@ -26,10 +27,10 @@ for input_file in data_dir_list:
         main(input_file_path, output_file_path)
 # 2-3：调gpt4o_api接口两次
 # 定义文件夹路径
-folder1 = 'C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\2切割后的数据'
-folder2 = 'C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\3调api跑出的数据\\调api跑出的数据_first'
-folder3 = 'C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\3调api跑出的数据\\调api跑出的数据_second'
-folder4 = 'C:\\Users\\zonekey008\\Desktop\\class_acitvity_identify\\code\data_process\\1.Multiple_interface_joint_calls\\data\\3调api跑出的数据\\调api跑出的数据_old'
+folder1 = 'data\\2切割后的数据'
+folder2 = 'data\\3调api跑出的数据\\调api跑出的数据_first'
+folder3 = 'data\\3调api跑出的数据\\调api跑出的数据_second'
+folder4 = 'data\\3调api跑出的数据\\调api跑出的数据_old'
 # 获取文件夹中的文件列表
 files_folder1 = set([item.split("_processed")[0] for item in os.listdir(folder1)])
 files_folder_new = set(["_".join(item.split("_processed_output.xlsx")[0].split("_")[1:]) for item in os.listdir(folder2)])
@@ -89,8 +90,11 @@ combine_excel_files(folder3, "combined_second.xlsx")
 def process_excel(input_file: str, output_file: str):
     # 读取Excel文件
     data = pd.read_excel(input_file)
+
+    #todo：将分析过程列中的空值替换为“error"。
     # 删除所有为NaN的行
-    data = data.dropna(axis=0, how='all')
+    # 删除所有为NaN的行
+    data = data.dropna(subset=['predict'])
     # 去除'predict'列中包含"error"的行
     data = data[~data['predict'].str.contains("error")].reset_index(drop=True)
     # 将'predict'列转换为列表
