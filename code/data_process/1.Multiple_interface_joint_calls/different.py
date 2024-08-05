@@ -61,7 +61,7 @@ for file in different:
     subprocess.run(command2, shell=True)
 
 
-# 4.合并数据
+#4.合并数据
 
 def combine_excel_files(folder, output_file):
     # 获取文件夹下所有的Excel文件
