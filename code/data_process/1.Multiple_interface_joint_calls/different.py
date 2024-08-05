@@ -91,8 +91,8 @@ def process_excel(input_file: str, output_file: str):
     # 读取Excel文件
     data = pd.read_excel(input_file)
 
-    #todo：将分析过程列中的空值替换为“error"。
-    # 删除所有为NaN的行
+
+
     # 删除所有为NaN的行
     data = data.dropna(subset=['predict'])
     # 去除'predict'列中包含"error"的行
