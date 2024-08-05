@@ -90,9 +90,6 @@ combine_excel_files(folder3, "combined_second.xlsx")
 def process_excel(input_file: str, output_file: str):
     # 读取Excel文件
     data = pd.read_excel(input_file)
-
-
-
     # 删除所有为NaN的行
     data = data.dropna(subset=['predict'])
     # 去除'predict'列中包含"error"的行
@@ -141,10 +138,13 @@ process_excel("combined_second.xlsx", "combined_file_splited_new_second.xlsx")
 # 创建DataFrame
 combined_first = pd.read_excel("combined_file_splited_new_first.xlsx")
 combined_second = pd.read_excel("combined_file_splited_new_second.xlsx")
+# 将combined_second下的gpt4o_label赋值 给combined_first中gpt4o_label_second列
 
-combined_first['gpt4o_label_second'] = combined_second['gpt4o_label']
 
-combined_first = combined_first.fillna(0)
+for i in tqdm(range(len(combined_first)),desc = "互相赋值"):
+    for j in range(len(combined_second)):
+        if combined_first.loc[i, 'text'] == combined_second.loc[j, 'text']:
+            combined_first.loc[i, 'gpt4o_label_second'] = combined_second.loc[j, 'gpt4o_label']
 # 提取gpt4o_label不一致的行索引
 
 unmatch_index = combined_first[combined_first['gpt4o_label']!=combined_first['gpt4o_label_second']].index
