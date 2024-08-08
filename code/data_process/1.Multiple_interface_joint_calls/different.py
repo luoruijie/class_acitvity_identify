@@ -111,7 +111,6 @@ def process_excel(input_file: str, output_file: str):
             output_json.append(extract_json(item))
         except Exception as e:
             output_json.append('{"label":"error"}')
-    # output_json = [f'{extract_json(item)}' for item in tqdm(gpt4o_output)]
     #
     # 添加分析结果到DataFrame
     df['gpt4o_output_analysis'] = output_analysis
@@ -146,8 +145,10 @@ for i in tqdm(range(len(combined_first)),desc = "互相赋值"):
         if combined_first.loc[i, 'text'] == combined_second.loc[j, 'text']:
             combined_first.loc[i, 'gpt4o_label_second'] = combined_second.loc[j, 'gpt4o_label']
 # 提取gpt4o_label不一致的行索引
-
+combined_first['gpt4o_label'] = combined_first['gpt4o_label'].replace(np.nan, 0)
+combined_first['gpt4o_label_second'] = combined_first['gpt4o_label_second'].replace(np.nan, 0)
 unmatch_index = combined_first[combined_first['gpt4o_label']!=combined_first['gpt4o_label_second']].index
+
 # 保留gpt4o_label一致的数据
 
 matched_data = combined_first[~combined_first.index.isin(unmatch_index)].reset_index(drop=True)

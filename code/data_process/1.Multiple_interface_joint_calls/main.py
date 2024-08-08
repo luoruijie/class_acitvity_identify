@@ -7,7 +7,7 @@ import importlib
 import json
 import os
 
-# 配置日志
+# 配置日志,按照路径打开mian.log文件可以看到对应的日志信息。
 logging.basicConfig(filename='log/main.log', level=logging.INFO, encoding="utf-8", filemode='w',
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -79,7 +79,7 @@ def generate_output_filename(input_file, model_name, output_dir):
     - 根据输入文件名称和模型名称生成输出文件名。
     - 输出文件名格式为 <模型名称>_<输入文件名>_output.xlsx，并将其保存在指定的输出目录中。
     """
-    input_filename = os.path.splitext(os.path.basename(input_file))[0]
+    input_filename = os.path.splitext(os.path.basename(input_file))[0]#os.path.basename：获取输入路径中的最后文件名部分，比如，/path/to/file.txt，os.path.basename 会返回 file.txt；os.path.splitext：将文件和拓展名分开。
     output_filename = f"{model_name}_{input_filename}_output.xlsx"
     return os.path.join(output_dir, output_filename)
 
@@ -112,16 +112,16 @@ def main(input_file, output_dir, model_numbers, config_file):
     model_config = config["models"]
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        # 创建future任根据models参数决定调用哪些API
+        # 创建future任务根据models参数决定调用哪些API
         futures = {}
-        for number in model_numbers:
+        for number in model_numbers: #model_numbers是一个
             model_name = model_mapping.get(number)
             if model_name and model_name in model_config:
                 api_func = load_api_function(model_config[model_name]['api_func'])
                 column_name = model_config[model_name]['column_name']
-                output_file = generate_output_filename(input_file, model_name, output_dir)
+                output_file = generate_output_filename(input_file, model_name, output_dir)#生成一个输出文件的文件名，调用generate_output_filename函数，模型名称家伙是那个只取input_file的文件名和输出路径结合成完整的保存路径。
                 futures[executor.submit(process_and_time, api_func, df.copy(), f"{model_name} API",
-                                        column_name)] = (column_name, output_file)
+                                        column_name)] = (column_name, output_file)#提交了一个任务给ThreadPoolExecutor并将返回的Future对象存储在一个字典中。
 
         for future in concurrent.futures.as_completed(futures):
             column_name, output_file = futures[future]
