@@ -114,14 +114,14 @@ def main(input_file, output_dir, model_numbers, config_file):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # 创建future任务根据models参数决定调用哪些API
         futures = {}
-        for number in model_numbers: #model_numbers是一个
+        for number in model_numbers: #model_numbers是一个list,可以只有一个number，也可以多个。
             model_name = model_mapping.get(number)
             if model_name and model_name in model_config:
                 api_func = load_api_function(model_config[model_name]['api_func'])
                 column_name = model_config[model_name]['column_name']
                 output_file = generate_output_filename(input_file, model_name, output_dir)#生成一个输出文件的文件名，调用generate_output_filename函数，模型名称家伙是那个只取input_file的文件名和输出路径结合成完整的保存路径。
                 futures[executor.submit(process_and_time, api_func, df.copy(), f"{model_name} API",
-                                        column_name)] = (column_name, output_file)#提交了一个任务给ThreadPoolExecutor并将返回的Future对象存储在一个字典中。
+                                        column_name)] = (column_name, output_file)#提交了一个任务给ThreadPoolExecutor并将返回的Future对象存储在一个字典中。column_name和output_file是附加信息，被记录在日志中，如果出现错误可以看到。
 
         for future in concurrent.futures.as_completed(futures):
             column_name, output_file = futures[future]
