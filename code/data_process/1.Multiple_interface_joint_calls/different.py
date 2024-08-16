@@ -123,8 +123,10 @@ def process_excel(input_file: str, output_file: str):
             list1.append(eval(item).get("label"))
         except Exception as e:
             print(f"Error at index {i}: {e}")
+            list1.append("error")
+    df['gpt4o_label'] = list1
 
-    df['gpt4o_label'] = [eval(item).get("label") for item in tqdm(output_json)]
+    # df['gpt4o_label'] = [eval(item).get("label") for item in tqdm(output_json)]
 
     # 将结果保存为新的Excel文件
     df.to_excel(output_file, index=False)
